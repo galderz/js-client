@@ -13,3 +13,7 @@ node_modules
 
 # Archive files
 *.tgz
+
+# Maven files
+/node
+/target
