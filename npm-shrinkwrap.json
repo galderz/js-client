@@ -1,0 +1,106 @@
+{
+  "name": "infinispan",
+  "version": "0.0.1-redhat-SNAPSHOT",
+  "dependencies": {
+    "jasmine-node": {
+      "version": "1.14.5",
+      "from": "jasmine-node@^1.14.5",
+      "dependencies": {
+        "coffee-script": {
+          "version": "1.10.0",
+          "from": "coffee-script@>=1.0.1"
+        },
+        "jasmine-reporters": {
+          "version": "1.0.2",
+          "from": "jasmine-reporters@~1.0.0"
+        },
+        "jasmine-growl-reporter": {
+          "version": "0.0.3",
+          "from": "jasmine-growl-reporter@~0.0.2",
+          "dependencies": {
+            "growl": {
+              "version": "1.7.0",
+              "from": "growl@~1.7.0"
+            }
+          }
+        },
+        "requirejs": {
+          "version": "2.1.22",
+          "from": "requirejs@>=0.27.1"
+        },
+        "walkdir": {
+          "version": "0.0.11",
+          "from": "walkdir@>= 0.0.1"
+        },
+        "gaze": {
+          "version": "0.3.4",
+          "from": "gaze@~0.3.2",
+          "dependencies": {
+            "minimatch": {
+              "version": "0.2.14",
+              "from": "minimatch@~0.2.9",
+              "dependencies": {
+                "lru-cache": {
+                  "version": "2.7.3",
+                  "from": "lru-cache@2"
+                },
+                "sigmund": {
+                  "version": "1.0.1",
+                  "from": "sigmund@~1.0.0"
+                }
+              }
+            },
+            "fileset": {
+              "version": "0.1.8",
+              "from": "fileset@~0.1.5",
+              "dependencies": {
+                "glob": {
+                  "version": "3.2.11",
+                  "from": "glob@3.x",
+                  "dependencies": {
+                    "inherits": {
+                      "version": "2.0.1",
+                      "from": "inherits@2"
+                    },
+                    "minimatch": {
+                      "version": "0.3.0",
+                      "from": "minimatch@0.3",
+                      "dependencies": {
+                        "lru-cache": {
+                          "version": "2.7.3",
+                          "from": "lru-cache@2"
+                        },
+                        "sigmund": {
+                          "version": "1.0.1",
+                          "from": "sigmund@~1.0.0"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "mkdirp": {
+          "version": "0.3.5",
+          "from": "mkdirp@~0.3.5"
+        }
+      }
+    },
+    "promise": {
+      "version": "7.1.1",
+      "from": "promise@^7.0.4",
+      "dependencies": {
+        "asap": {
+          "version": "2.0.3",
+          "from": "asap@~2.0.3"
+        }
+      }
+    },
+    "underscore": {
+      "version": "1.8.3",
+      "from": "underscore@^1.8.3"
+    }
+  }
+}

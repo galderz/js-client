@@ -97,6 +97,8 @@
                       file="${project.basedir}/npm-shrinkwrap.json"
                       match="(,\s*)(${line.separator}\s*})" replace="\2">
                   </replaceregexp>
+                  <echo message="== Removing npm-shrinkwrap.json.orig... =="></echo>
+                  <delete file="${project.basedir}/npm-shrinkwrap.json.orig"></delete>
                 </target>
               </configuration>
               <goals>
