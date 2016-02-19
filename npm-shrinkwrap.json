@@ -88,6 +88,38 @@
         }
       }
     },
+    "log4js": {
+      "version": "0.6.31",
+      "from": "log4js@^0.6.29",
+      "dependencies": {
+        "readable-stream": {
+          "version": "1.0.33",
+          "from": "readable-stream@~1.0.2",
+          "dependencies": {
+            "core-util-is": {
+              "version": "1.0.2",
+              "from": "core-util-is@~1.0.0"
+            },
+            "isarray": {
+              "version": "0.0.1",
+              "from": "isarray@0.0.1"
+            },
+            "string_decoder": {
+              "version": "0.10.31",
+              "from": "string_decoder@~0.10.x"
+            },
+            "inherits": {
+              "version": "2.0.1",
+              "from": "inherits@~2.0.1"
+            }
+          }
+        },
+        "semver": {
+          "version": "4.3.6",
+          "from": "semver@~4.3.3"
+        }
+      }
+    },
     "promise": {
       "version": "7.1.1",
       "from": "promise@^7.0.4",
