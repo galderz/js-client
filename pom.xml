@@ -12,7 +12,7 @@
    <groupId>org.infinispan</groupId>
    <artifactId>infinispan-js-client</artifactId>
    <version>0.1.0-redhat-SNAPSHOT</version>
-   <packaging>jar</packaging>
+   <packaging>pom</packaging>
    <name>Infinispan Javascript Client</name>
    <description>Javascript Client for Infinispan</description>
    <url>http://www.infinispan.org</url>
@@ -61,7 +61,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.8</version>
           <executions>
             <execution>
               <id>shrinkwrap-json-clean</id>
@@ -139,24 +138,22 @@
 
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>2.6</version>
-            <executions>
-               <execution>
-                  <goals>
-                     <goal>jar</goal>
-                  </goals>
-               </execution>
-            </executions>
+            <artifactId>maven-assembly-plugin</artifactId>
             <configuration>
-               <classesDirectory>.</classesDirectory>
-               <excludes>
-                   <exclude>target/**</exclude>
-                   <exclude>node/**</exclude>
-                   <exclude>.git/**</exclude>
-                   <exclude>.gitignore</exclude>
-               </excludes>
+                <descriptors>
+                  <descriptor>src/main/assembly/dist.xml</descriptor>
+                </descriptors>
+                <appendAssemblyId>false</appendAssemblyId>
+                <tarLongFileMode>posix</tarLongFileMode>
             </configuration>
+            <executions>
+                <execution>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>single</goal>
+                  </goals>
+                </execution>
+            </executions>
          </plugin>
       </plugins>
    </build>
