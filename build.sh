@@ -59,11 +59,11 @@ source_if_exists() {
 say() {
     if [ $darwin = "true" ]; then
         # On Mac OS, notify via Growl
-        which -s growlnotify && growlnotify --name Maven --sticky --message "Infinispan build: $@"
+        which -s growlnotify && growlnotify --name Maven --sticky --message "Infinispan JS Client build: $@"
     fi
     if [ `uname -s` == "Linux" ]; then
         # On Linux, notify via notify-send
-        which notify-send && notify-send "Infinispan management console build: $@"
+        which notify-send && notify-send "Infinispan JS Client build: $@"
     fi
 }
 
