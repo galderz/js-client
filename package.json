@@ -1,6 +1,6 @@
 {
   "name": "infinispan",
-  "version": "0.1.0-redhat-SNAPSHOT",
+  "version": "0.1.0-DR2-redhat-1",
   "description": "Infinispan Javascript client",
   "main": "index",
   "directories": {
