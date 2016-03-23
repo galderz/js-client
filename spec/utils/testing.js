@@ -4,12 +4,23 @@ var _ = require('underscore');
 
 var log4js = require('log4js');
 var Promise = require('promise');
+var exec = Promise.denodeify(require('child_process').exec);
 
 var f = require('../../lib/functional');
 var ispn = require('../../lib/infinispan');
+var u = require('../../lib/utils');
 var protocols = require('../../lib/protocols');
 
 exports.local = {port: 11222, host: '127.0.0.1'};
+exports.cluster1 = {port: 11322, host: '127.0.0.1'};
+exports.cluster2 = {port: 11422, host: '127.0.0.1'};
+exports.cluster3 = {port: 11522, host: '127.0.0.1'};
+exports.cluster = [exports.cluster1, exports.cluster2, exports.cluster3];
+
+var HOME='/opt/infinispan-server';
+var CLUSTER_CLI_PORTS = [10090, 10190, 10290];
+
+var logger = u.logger('testing');
 
 exports.client = function(args, cacheName) {
   log4js.configure('spec/utils/test-log4js.json');
@@ -70,9 +81,19 @@ exports.size = function(k) {
   return function(client) { return client.size(); }
 };
 
+exports.stats = function() {
+  return function(client) { return client.stats(); }
+};
+
 exports.clear = function() {
   return function(client) {
     return client.clear();
+  }
+};
+
+exports.ping = function() {
+  return function(client) {
+    return client.ping();
   }
 };
 
@@ -105,12 +126,31 @@ exports.onMany = function(eventListeners) {
   };
 };
 
+exports.exec = function(scriptName, params) {
+  return function(client) {
+    return client.execute(scriptName, params);
+  }
+};
+
 exports.removeListener = function(done) {
   return function(client, listenerId) {
     client.removeListener(listenerId).then(function() {
       if (f.existy(done)) done();
     });
   };
+};
+
+exports.getTopologyId = function() {
+  return function(client) {
+    return Promise.resolve(client.getTopologyInfo().getTopologyId());
+  }
+};
+
+exports.getMembers = function() {
+  return function(client) {
+    return Promise.resolve(
+        _.sortBy(client.getTopologyInfo().getMembers(), 'port'));
+  }
 };
 
 exports.assert = function(fun, expectFun) {
@@ -127,8 +167,36 @@ exports.assert = function(fun, expectFun) {
   }
 };
 
+exports.assertStats = function(fun, statsFun) {
+  return function(client) {
+    var before = client.stats().then(function(before) {return before});
+    var put = before.then(function() { return fun(client); });
+    var after = put.then(function() { return client.stats(); });
+    return Promise.all([before, after]).then(function(stats) {
+      statsFun(stats[0], stats[1]);
+      return client;
+    });
+  }
+};
+
+exports.resetStats = function(client) {
+  var resets = _.map(CLUSTER_CLI_PORTS, function(port) {
+    return exec(
+        HOME + '/bin/ispn-cli.sh --controller=127.0.0.1:' + port +
+        ' --connect --command=/subsystem=datagrid-infinispan' +
+        '/cache-container=clustered/distributed-cache=default:reset-statistics')
+  });
+  return Promise.all(resets).then(function() { return client; });
+};
+
+exports.clusterSize = function() { return CLUSTER_CLI_PORTS.length; };
+
 exports.toBe = function(value) {
   return function(actual) { expect(actual).toBe(value); }
+};
+
+exports.toEqual = function(value) {
+  return function(actual) { expect(actual).toEqual(value); }
 };
 
 exports.toContain = function(value) {
@@ -197,4 +265,36 @@ exports.expectEvents = function(keys, eventDone) {
         eventDone(client, listenerId);
     }
   }
+};
+
+exports.failed = function(done) {
+  return function(error) {
+    done(error);
+  };
+};
+
+exports.randomStr = function(size) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < size; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+};
+
+exports.findKeyForServers = function(client, addrs) {
+  var attempts = 1000;
+  var key;
+  do {
+    key = exports.randomStr(8);
+    var owners = client.getTopologyInfo().findOwners(key);
+    attempts--;
+  } while (!_.isEqual(addrs, owners) && attempts >= 0);
+
+  if (attempts < 0)
+    throw new Error("Could not find any key owned by: " + addrs);
+
+  logger.debugf("Generated key=%s hashing to %s", key, u.showArrayAddress(addrs));
+  return key;
 };

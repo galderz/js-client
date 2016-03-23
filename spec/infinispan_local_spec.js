@@ -1,13 +1,16 @@
 var _ = require('underscore');
+var Promise = require('promise');
+var readFile = Promise.denodeify(require('fs').readFile);
+
 var f = require('../lib/functional');
 var t = require('./utils/testing'); // Testing dependency
-var Promise = require('promise');
 
 describe('Infinispan local client', function() {
   var client = t.client(t.local);
 
-  beforeEach(function() {
-    client.then(t.assert(t.clear()));
+  beforeEach(function(done) { client
+      .then(t.assert(t.clear()))
+      .catch(t.failed(done)).finally(done);
   });
 
   var prev = function() {
@@ -82,12 +85,12 @@ describe('Infinispan local client', function() {
       .finally(done);
   });
   it('can ping a server', function(done) { client
-    .then(t.assert(ping(), t.toBeUndefined))
+    .then(t.assert(t.ping(), t.toBeUndefined))
     .catch(failed(done))
     .finally(done);
   });
   it('can put -> get a big value', function(done) {
-    var value = randomStr(128);
+    var value = t.randomStr(128);
     client
       .then(t.assert(t.put('key', value)))
       .then(t.assert(t.get('key'), toEqual(value)))
@@ -95,7 +98,7 @@ describe('Infinispan local client', function() {
       .finally(done);
   });
   it('can put -> get a really big value', function(done) {
-    var value = randomStr(1024 * 1024);
+    var value = t.randomStr(1024 * 1024);
     client
       .then(t.assert(t.put('key', value)))
       .then(t.assert(t.get('key'), toEqual(value)))
@@ -169,11 +172,6 @@ describe('Infinispan local client', function() {
       .then(t.assert(remove('listen-same'), t.toBeTruthy))
       .catch(failed(done));
   });
-  it('can listen for only create events', function(done) { client
-      .then(t.assert(t.on('create', t.expectEvent('listen-create', 'value', t.removeListener(done)))))
-      .then(t.assert(t.putIfAbsent('listen-create', 'value'), t.toBeTruthy))
-      .catch(failed(done));
-  });
   it('can listen for state events when adding listener to non-empty cache', function(done) { client
       .then(t.assert(t.putIfAbsent('listen-state-0', 'v0'), t.toBeTruthy))
       .then(t.assert(t.putIfAbsent('listen-state-1', 'v1'), t.toBeTruthy))
@@ -209,10 +207,34 @@ describe('Infinispan local client', function() {
   });
   it('can failover to a secondary node if first node is not available', function(done) {
     t.client([{port: 1234, host: '127.0.0.1'}, t.local])
-        .then(t.assert(ping(), t.toBeUndefined))
+        .then(t.assert(t.ping(), t.toBeUndefined))
         .then(t.disconnect())
         .catch(failed(done))
         .finally(done);
+  });
+  it('can query statistic values', function(done) { client
+      .then(t.assertStats(t.put('stats-key', 'stats-value'), toBeStatIncr('stores')))
+      .then(t.assertStats(t.get('stats-key'), toBeStatIncr('hits')))
+      .then(t.assertStats(t.get('stats-miss-key'), toBeStatIncr('misses')))
+      .then(t.assertStats(remove('stats-miss-key'), toBeStatIncr('removeMisses')))
+      .then(t.assertStats(remove('stats-key'), toBeStatIncr('removeHits')))
+      .catch(failed(done)).finally(done);
+  });
+  it('can retrieve topology information', function(done) { client
+    .then(t.assert(t.getTopologyId(), t.toBe(0)))
+    .then(t.assert(t.getMembers(), t.toEqual([{host: '127.0.0.1', port: 11222}])))
+    .catch(failed(done)).finally(done);
+  });
+  it('can execute a script remotely to store and retrieve data', function(done) {
+    Promise.all([client, readFile('spec/utils/typed-put-get.js')])
+        .then(function(vals) {
+          var c = vals[0];
+          return c.addScript('typed-put-get.js', vals[1].toString())
+              .then(function() { return c; } );
+        })
+        .then(t.assert(t.exec('typed-put-get.js', {k: 'typed-key', v: 'typed-value'}),
+                       t.toBe('typed-value')))
+        .catch(failed(done)).finally(done);
   });
   // Since Jasmine 1.3 does not have afterAll callback, this disconnect test must be last
   it('disconnects client', function(done) { client
@@ -232,12 +254,6 @@ function getAll(keys) {
 function remove(k, opts) {
   return function(client) {
     return client.remove(k, opts);
-  }
-}
-
-function ping() {
-  return function(client) {
-    return client.ping();
   }
 }
 
@@ -345,18 +361,14 @@ function toContainAll(expected) {
   }
 }
 
+function toBeStatIncr(stat) {
+  return function(before, after) {
+    expect(after[stat]).toBe(before[stat] + 1);
+  }
+}
+
 var failed = function(done) {
   return function(error) {
     done(error);
   };
 };
-
-function randomStr(size)  {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (var i = 0; i < size; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  return text;
-}

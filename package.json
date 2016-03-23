@@ -1,6 +1,6 @@
 {
   "name": "infinispan",
-  "version": "0.1.0-redhat-SNAPSHOT",
+  "version": "0.2.0-redhat-SNAPSHOT",
   "description": "Infinispan Javascript client",
   "main": "index",
   "directories": {
@@ -25,9 +25,11 @@
     "url": "https://github.com/infinispan/js-client"
   },
   "dependencies": {
-    "jasmine-node": "^1.14.5",
     "log4js": "^0.6.29",
     "promise": "^7.0.4",
     "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5"
   }
 }
