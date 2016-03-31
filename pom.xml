@@ -133,6 +133,16 @@
                      <arguments>install</arguments>
                   </configuration>
                </execution>
+               <execution>
+                  <id>npm pack</id>
+                  <goals>
+                     <goal>npm</goal>
+                  </goals>
+                  <phase>generate-resources</phase>
+                  <configuration>
+                     <arguments>pack</arguments>
+                  </configuration>
+               </execution>
             </executions>
          </plugin>
 
