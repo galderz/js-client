@@ -60,6 +60,7 @@
                         <exclude>npm-shrinkwrap.json</exclude><!-- copied by antrun below -->
                         <exclude>target/**</exclude>
                         <exclude>etc/**</exclude>
+                        <exclude>src/**</exclude>
                     </excludes>
                   </resource>
                 </resources>              
