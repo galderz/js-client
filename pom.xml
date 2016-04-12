@@ -40,38 +40,45 @@
    <build>
       <plugins>
         <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>2.5</version>
-          <configuration>
-            <filesets>
-              <fileset>
-                <directory>./</directory>
-                <includes>
-                  <include>node/**</include>
-                  <include>node_modules/**</include>
-                  <include>node_tmp/**</include>
-                  <include>.tmp/**</include>
-                </includes>
-                <followSymlinks>false</followSymlinks>
-              </fileset>
-            </filesets>
-          </configuration>
+          <artifactId>maven-resources-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>copy-resources</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                <resources>          
+                  <resource>
+                    <directory>${project.basedir}</directory>
+                    <excludes>
+                        <exclude>pom.xml</exclude>
+                        <exclude>build.sh</exclude>
+                        <exclude>maven-settings.xml</exclude>
+                        <exclude>npm-shrinkwrap.json</exclude><!-- copied by antrun below -->
+                        <exclude>target/**</exclude>
+                        <exclude>etc/**</exclude>
+                    </excludes>
+                  </resource>
+                </resources>              
+              </configuration>            
+            </execution>
+          </executions>
         </plugin>
-        
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
           <executions>
             <execution>
               <id>shrinkwrap-json-clean</id>
-              <phase>initialize</phase>
+              <phase>process-resources</phase>
               <configuration>
                 <target>
-                  <echo message="== Renaming npm-shrinkwrap.json into npm-shrinkwrap.json.orig..."></echo>
-                  <move file="${project.basedir}/npm-shrinkwrap.json" tofile="${project.basedir}/npm-shrinkwrap.json.orig"></move>
 
-                  <echo message="== Copying back npm-shrinkwrap.json.orig into npm-shrinkwrap.json omitting resolved lines..."></echo>
-                  <copy file="${project.basedir}/npm-shrinkwrap.json.orig" tofile="${project.basedir}/npm-shrinkwrap.json">
+                  <echo message="== Copying back npm-shrinkwrap.json into output dir omitting resolved lines..."></echo>
+                  <copy file="${project.basedir}/npm-shrinkwrap.json" tofile="${project.build.outputDirectory}/npm-shrinkwrap.json">
                     <filterchain>
                       <linecontainsregexp negate="true">
                         <regexp pattern="&quot;resolved&quot;:\s*&quot;\S*&quot;\S*"></regexp>
@@ -83,7 +90,7 @@
                   <replaceregexp
                       byline="false"
                       flags="mg"
-                      file="${project.basedir}/npm-shrinkwrap.json"
+                      file="${project.build.outputDirectory}/npm-shrinkwrap.json"
                       match="(&quot;from&quot;:\s*&quot;)(https://registry\.npmjs\.org/\S*/-/)" replace="\1">
                   </replaceregexp>
                   <!--
@@ -93,11 +100,9 @@
                   <replaceregexp
                       byline="false"
                       flags="mg"
-                      file="${project.basedir}/npm-shrinkwrap.json"
+                      file="${project.build.outputDirectory}/npm-shrinkwrap.json"
                       match="(,\s*)(${line.separator}\s*})" replace="\2">
                   </replaceregexp>
-                  <echo message="== Removing npm-shrinkwrap.json.orig... =="></echo>
-                  <delete file="${project.basedir}/npm-shrinkwrap.json.orig"></delete>
                 </target>
               </configuration>
               <goals>
@@ -111,13 +116,17 @@
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
             <version>0.0.24.redhat-001</version>
+            <configuration>
+                <workingDirectory>${project.build.outputDirectory}</workingDirectory>
+                <installDirectory>${project.build.directory}</installDirectory>
+            </configuration>
             <executions>
                <execution>
                   <id>install node and npm</id>
                   <goals>
                      <goal>install-node-and-npm</goal>
                   </goals>
-                  <phase>generate-resources</phase>
+                  <phase>process-resources</phase>
                   <configuration>
                      <nodeVersion>v4.3.0</nodeVersion>
                      <npmVersion>2.14.12</npmVersion>
@@ -128,7 +137,7 @@
                   <goals>
                      <goal>npm</goal>
                   </goals>
-                  <phase>generate-resources</phase>
+                  <phase>process-resources</phase>
                   <configuration>
                      <arguments>install</arguments>
                   </configuration>
@@ -138,7 +147,7 @@
                   <goals>
                      <goal>npm</goal>
                   </goals>
-                  <phase>generate-resources</phase>
+                  <phase>prepare-package</phase>
                   <configuration>
                      <arguments>pack</arguments>
                   </configuration>
