@@ -4,6 +4,7 @@ var readFile = Promise.denodeify(require('fs').readFile);
 
 var f = require('../lib/functional');
 var t = require('./utils/testing'); // Testing dependency
+var tests = require('./tests'); // Shared tests
 
 describe('Infinispan local client', function() {
   var client = t.client(t.local);
@@ -181,18 +182,7 @@ describe('Infinispan local client', function() {
           {'includeState' : true})))
       .catch(failed(done));
   });
-  it('can iterate over entries', function(done) {
-    var pairs = [
-      {key: 'it1', value: 'v1', done: false},
-      {key: 'it2', value: 'v2', done: false},
-      {key: 'it3', value: 'v3', done: false}];
-    client
-        .then(t.assert(t.putAll(pairs), t.toBeUndefined))
-        .then(parIterator(1, pairs)) // Iterate all data, 1 element at time, parallel
-        .then(seqIterator(3, pairs)) // Iterate all data, 3 elements at time, sequential
-        .catch(failed(done))
-        .finally(done);
-  });
+  it('can iterate over entries', tests.iterateEntries('local', client));
   it('can iterate over entries getting their expirable metadata', function(done) {
     var pairs = [{key: 'it-exp-1', value: 'v1'}, {key: 'it-exp-2', value: 'v2'}];
     var expected = _.map(pairs, function(pair) {
@@ -200,8 +190,8 @@ describe('Infinispan local client', function() {
     });
     client
         .then(t.assert(t.putAll(pairs, {lifespan: '1d', maxIdle: '1h'}), t.toBeUndefined))
-        .then(parIterator(1, expected, {metadata: true})) // Iterate all data, 1 element at time, parallel
-        .then(seqIterator(3, expected, {metadata: true})) // Iterate all data, 3 elements at time, sequential
+        .then(t.parIterator(1, expected, {metadata: true})) // Iterate all data, 1 element at time, parallel
+        .then(t.seqIterator(3, expected, {metadata: true})) // Iterate all data, 3 elements at time, sequential
         .catch(failed(done))
         .finally(done);
   });
@@ -291,52 +281,6 @@ function notRemoveWithVersion(k, opts) {
   }
 }
 
-function expectIteratorDone(it) {
-  return function() {
-    return it.next().then(function(entry) {
-      expect(entry.done).toBeTruthy();
-    })
-  }
-}
-
-function parIterator(batchSize, expected, opts) {
-  return function(client) {
-    return client.iterator(batchSize, opts).then(function(it) {
-      var promises = _.map(_.range(expected.length), function() {
-        return it.next().then(function(entry) { return entry; })
-      });
-      return Promise.all(promises)
-        .then(function(actual) { toContainAll(expected)(actual); })
-        .then(expectIteratorDone(it))
-        .then(expectIteratorDone(it)) // Second time should not go remote
-        .then(function() { return it.close(); }) // Close iterator
-        .then(function() { return client; });
-    })
-  }
-}
-
-function seqIterator(batchSize, expected, opts) {
-  return function(client) {
-    return client.iterator(batchSize, opts).then(function(it) {
-      var p = _.foldl(_.range(expected.length),
-        function(p) {
-          return p.then(function(array) {
-             return it.next().then(function(entry) {
-               array.push(entry);
-               return array;
-             })
-          });
-        }, Promise.resolve([]));
-
-      return p
-          .then(function(array) { toContainAll(expected)(array); })
-          .then(function() { return it.close(); }) // Close iterator
-          .then(function() { return client; });
-    })
-  }
-}
-
-
 function toEqual(value) {
   return function(actual) {
     expect(actual).toEqual(value);
@@ -346,18 +290,6 @@ function toEqual(value) {
 function toEqualPairs(value) {
   return function(actual) {
     expect(_.sortBy(actual, 'key')).toEqual(value);
-  }
-}
-
-function toContainAll(expected) {
-  return function(actual) {
-    var sorted = _.sortBy(actual, 'key');
-    var zipped = _.zip(sorted, expected);
-    _.map(zipped, function(e) {
-      var actualEntry = e[0];
-      var expectedEntry = e[1];
-      t.toContain(expectedEntry)(actualEntry);
-    });
   }
 }
 

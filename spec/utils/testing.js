@@ -298,3 +298,61 @@ exports.findKeyForServers = function(client, addrs) {
   logger.debugf("Generated key=%s hashing to %s", key, u.showArrayAddress(addrs));
   return key;
 };
+
+exports.parIterator = function(batchSize, expected, opts) {
+  return function(client) {
+    return client.iterator(batchSize, opts).then(function(it) {
+      var promises = _.map(_.range(expected.length), function() {
+        return it.next().then(function(entry) { return entry; })
+      });
+      return Promise.all(promises)
+        .then(function(actual) { toContainAll(expected)(actual); })
+        .then(expectIteratorDone(it))
+        .then(expectIteratorDone(it)) // Second time should not go remote
+        .then(function() { return it.close(); }) // Close iterator
+        .then(function() { return client; });
+    })
+  }
+};
+
+exports.seqIterator = function(batchSize, expected, opts) {
+  return function(client) {
+    return client.iterator(batchSize, opts).then(function(it) {
+      var p = _.foldl(
+        _.range(expected.length),
+        function(p) {
+          return p.then(function(array) {
+            return it.next().then(function(entry) {
+              array.push(entry);
+              return array;
+            })
+          });
+        }, Promise.resolve([]));
+
+      return p
+        .then(function(array) { toContainAll(expected)(array); })
+        .then(function() { return it.close(); }) // Close iterator
+        .then(function() { return client; });
+    })
+  }
+};
+
+function expectIteratorDone(it) {
+  return function() {
+    return it.next().then(function(entry) {
+      expect(entry.done).toBeTruthy();
+    })
+  }
+}
+
+function toContainAll(expected) {
+  return function(actual) {
+    var sorted = _.sortBy(actual, 'key');
+    var zipped = _.zip(sorted, expected);
+    _.map(zipped, function(e) {
+      var actualEntry = e[0];
+      var expectedEntry = e[1];
+      exports.toContain(expectedEntry)(actualEntry);
+    });
+  }
+}

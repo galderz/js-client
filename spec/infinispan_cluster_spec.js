@@ -1,7 +1,9 @@
 var _ = require('underscore');
+var Promise = require('promise');
+
 var f = require('../lib/functional');
 var t = require('./utils/testing'); // Testing dependency
-var Promise = require('promise');
+var tests = require('./tests'); // Shared tests
 
 describe('Infinispan cluster client', function() {
   var client = t.client(t.cluster1);
@@ -22,13 +24,17 @@ describe('Infinispan cluster client', function() {
 
   it('can use consistent hashing to direct key-based ops to owner nodes', function(done) { client
       .then(routeConsistentHash())
+      .then(t.assert(t.clear()))
       .catch(t.failed(done)).finally(done);
   });
 
   it('can load balance key-less operations in round-robin fashion', function(done) { client
       .then(routeRoundRobin())
+      .then(t.assert(t.clear()))
       .catch(t.failed(done)).finally(done);
   });
+
+  it('can iterate over entries in a cluster', tests.iterateEntries('cluster', client));
 
   // Since Jasmine 1.3 does not have afterAll callback, this disconnect test must be last
   it('disconnects client', function(done) { client
