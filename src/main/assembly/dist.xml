@@ -15,5 +15,12 @@
         <include>README*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${project.build.outputDirectory}/out</directory>
+      <outputDirectory>/doc/apidocs</outputDirectory>
+      <includes>
+        <include>**/**</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>
