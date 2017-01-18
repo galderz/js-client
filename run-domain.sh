@@ -13,7 +13,7 @@ function waitForClusters()
   MEMBERS_MAIN=''
   while [ "$MEMBERS_MAIN" != \"3\" ];
   do
-    MEMBERS_MAIN=$($SERVER_HOME/bin/ispn-cli.sh -c $CLUSTER_SIZE_MAIN | grep result | tr -d '\r' | awk '{print $3}')
+    MEMBERS_MAIN=$($SERVER_HOME/bin/cli.sh -c $CLUSTER_SIZE_MAIN | grep result | tr -d '\r' | awk '{print $3}')
     echo "Waiting for clusters to form (main: $MEMBERS_MAIN)"
     sleep 3
   done

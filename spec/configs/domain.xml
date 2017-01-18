@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<domain xmlns="urn:jboss:domain:4.2">
+<domain xmlns="urn:jboss:domain:4.0">
     <extensions>
         <extension module="org.infinispan.extension"/>
         <extension module="org.infinispan.server.endpoint"/>
@@ -127,7 +127,7 @@
                 <worker name="default"/>
                 <buffer-pool name="default"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:core:9.0" default-cache-container="local">
+            <subsystem xmlns="urn:infinispan:server:core:8.3" default-cache-container="local">
                 <cache-container name="local" default-cache="default" statistics="true">
                     <global-state/>
                     <local-cache name="default" start="EAGER">
@@ -141,7 +141,7 @@
                     <local-cache name="namedCache" start="EAGER"/>
                 </cache-container>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:endpoint:9.0">
+            <subsystem xmlns="urn:infinispan:server:endpoint:8.0">
                 <hotrod-connector socket-binding="hotrod" cache-container="local">
                     <topology-state-transfer lazy-retrieval="false" lock-timeout="1000" replication-timeout="5000"/>
                 </hotrod-connector>
@@ -345,7 +345,7 @@
                 <worker name="default"/>
                 <buffer-pool name="default"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:core:9.0" default-cache-container="clustered">
+            <subsystem xmlns="urn:infinispan:server:core:8.3" default-cache-container="clustered">
                 <cache-container name="clustered" default-cache="default" statistics="true">
                     <transport lock-timeout="60000"/>
                     <global-state/>
@@ -359,26 +359,10 @@
                     <distributed-cache-configuration name="indexed" mode="SYNC" start="EAGER">
                         <indexing index="LOCAL" auto-config="true"/>
                     </distributed-cache-configuration>
-                    <distributed-cache-configuration name="memory-bounded" mode="SYNC" start="EAGER">
-                        <memory>
-                            <binary size="10000000" eviction="MEMORY"/>
-                        </memory>
-                    </distributed-cache-configuration>
-                    <distributed-cache-configuration name="persistent-file-store-passivation" mode="SYNC" start="EAGER">
-                        <memory>
-                            <object size="10000"/>
-                        </memory>
-                        <file-store shared="false" fetch-state="true" passivation="true">
-                            <write-behind modification-queue-size="1024" thread-pool-size="1"/>
-                        </file-store>
-                    </distributed-cache-configuration>
                     <distributed-cache-configuration name="persistent-file-store-write-behind" mode="SYNC" start="EAGER">
                         <file-store shared="false" fetch-state="true" passivation="false">
                             <write-behind modification-queue-size="1024" thread-pool-size="1"/>
                         </file-store>
-                    </distributed-cache-configuration>
-                    <distributed-cache-configuration name="persistent-rocksdb-store" mode="SYNC" start="EAGER">
-                        <rocksdb-store shared="false" fetch-state="true" passivation="false"/>
                     </distributed-cache-configuration>
                     <distributed-cache-configuration name="persistent-jdbc-string-keyed" mode="SYNC" owners="2" start="EAGER">
                         <string-keyed-jdbc-store datasource="java:jboss/datasources/ExampleDS" fetch-state="true" preload="false" purge="false" shared="false" passivation="false">
@@ -409,14 +393,14 @@
                     </distributed-cache>
                 </cache-container>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:endpoint:9.0">
+            <subsystem xmlns="urn:infinispan:server:endpoint:8.0">
                 <hotrod-connector socket-binding="hotrod" cache-container="clustered">
                     <topology-state-transfer lazy-retrieval="false" lock-timeout="1000" replication-timeout="5000"/>
                 </hotrod-connector>
                 <!-- JS MOD :: START :: remove memcached, rest and websocket connectors -->
                 <!-- JS MOD :: END -->
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:jgroups:9.0">
+            <subsystem xmlns="urn:infinispan:server:jgroups:8.0">
                 <channels default="cluster">
                     <channel name="cluster"/>
                 </channels>
@@ -651,7 +635,7 @@
                 <worker name="default"/>
                 <buffer-pool name="default"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:core:9.0" default-cache-container="clustered">
+            <subsystem xmlns="urn:infinispan:server:core:8.3" default-cache-container="clustered">
                 <cache-container name="clustered" default-cache="default" statistics="true">
                     <transport lock-timeout="60000"/>
                     <global-state/>
@@ -665,26 +649,10 @@
                     <distributed-cache-configuration name="indexed" mode="SYNC" start="EAGER">
                         <indexing index="LOCAL" auto-config="true"/>
                     </distributed-cache-configuration>
-                    <distributed-cache-configuration name="memory-bounded" mode="SYNC" start="EAGER">
-                        <memory>
-                            <binary size="10000000" eviction="MEMORY"/>
-                        </memory>
-                    </distributed-cache-configuration>
-                    <distributed-cache-configuration name="persistent-file-store-passivation" mode="SYNC" start="EAGER">
-                        <memory>
-                            <object size="10000"/>
-                        </memory>
-                        <file-store shared="false" fetch-state="true" passivation="true">
-                            <write-behind modification-queue-size="1024" thread-pool-size="1"/>
-                        </file-store>
-                    </distributed-cache-configuration>
                     <distributed-cache-configuration name="persistent-file-store-write-behind" mode="SYNC" start="EAGER">
                         <file-store shared="false" fetch-state="true" passivation="false">
                             <write-behind modification-queue-size="1024" thread-pool-size="1"/>
                         </file-store>
-                    </distributed-cache-configuration>
-                    <distributed-cache-configuration name="persistent-rocksdb-store" mode="SYNC" start="EAGER">
-                        <rocksdb-store shared="false" fetch-state="true" passivation="false"/>
                     </distributed-cache-configuration>
                     <distributed-cache-configuration name="persistent-jdbc-string-keyed" mode="SYNC" owners="2" start="EAGER">
                         <string-keyed-jdbc-store datasource="java:jboss/datasources/ExampleDS" fetch-state="true" preload="false" purge="false" shared="false" passivation="false">
@@ -722,15 +690,14 @@
                     </distributed-cache>
                 </cache-container>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:endpoint:9.0">
+            <subsystem xmlns="urn:infinispan:server:endpoint:8.0">
                 <hotrod-connector socket-binding="hotrod" cache-container="clustered">
                     <topology-state-transfer lazy-retrieval="false" lock-timeout="1000" replication-timeout="5000"/>
                 </hotrod-connector>
                 <memcached-connector socket-binding="memcached" cache-container="clustered"/>
                 <rest-connector socket-binding="rest" cache-container="clustered" security-domain="other" auth-method="BASIC"/>
-                <websocket-connector socket-binding="websocket" cache-container="clustered"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:jgroups:9.0">
+            <subsystem xmlns="urn:infinispan:server:jgroups:8.0">
                 <channels default="cluster">
                     <channel name="cluster"/>
                     <channel name="xsite" stack="tcp"/>
@@ -965,7 +932,7 @@
                 <worker name="default"/>
                 <buffer-pool name="default"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:core:9.0" default-cache-container="clustered">
+            <subsystem xmlns="urn:infinispan:server:core:8.3" default-cache-container="clustered">
                 <cache-container name="clustered" default-cache="default" statistics="true">
                     <transport lock-timeout="60000"/>
                     <global-state/>
@@ -979,26 +946,10 @@
                     <distributed-cache-configuration name="indexed" mode="SYNC" start="EAGER">
                         <indexing index="LOCAL" auto-config="true"/>
                     </distributed-cache-configuration>
-                    <distributed-cache-configuration name="memory-bounded" mode="SYNC" start="EAGER">
-                        <memory>
-                            <binary size="10000000" eviction="MEMORY"/>
-                        </memory>
-                    </distributed-cache-configuration>
-                    <distributed-cache-configuration name="persistent-file-store-passivation" mode="SYNC" start="EAGER">
-                        <memory>
-                            <object size="10000"/>
-                        </memory>
-                        <file-store shared="false" fetch-state="true" passivation="true">
-                            <write-behind modification-queue-size="1024" thread-pool-size="1"/>
-                        </file-store>
-                    </distributed-cache-configuration>
                     <distributed-cache-configuration name="persistent-file-store-write-behind" mode="SYNC" start="EAGER">
                         <file-store shared="false" fetch-state="true" passivation="false">
                             <write-behind modification-queue-size="1024" thread-pool-size="1"/>
                         </file-store>
-                    </distributed-cache-configuration>
-                    <distributed-cache-configuration name="persistent-rocksdb-store" mode="SYNC" start="EAGER">
-                        <rocksdb-store shared="false" fetch-state="true" passivation="false"/>
                     </distributed-cache-configuration>
                     <distributed-cache-configuration name="persistent-jdbc-string-keyed" mode="SYNC" owners="2" start="EAGER">
                         <string-keyed-jdbc-store datasource="java:jboss/datasources/ExampleDS" fetch-state="true" preload="false" purge="false" shared="false" passivation="false">
@@ -1036,15 +987,14 @@
                     </distributed-cache>
                 </cache-container>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:endpoint:9.0">
+            <subsystem xmlns="urn:infinispan:server:endpoint:8.0">
                 <hotrod-connector socket-binding="hotrod" cache-container="clustered">
                     <topology-state-transfer lazy-retrieval="false" lock-timeout="1000" replication-timeout="5000"/>
                 </hotrod-connector>
                 <memcached-connector socket-binding="memcached" cache-container="clustered"/>
                 <rest-connector socket-binding="rest" cache-container="clustered" security-domain="other" auth-method="BASIC"/>
-                <websocket-connector socket-binding="websocket" cache-container="clustered"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:jgroups:9.0">
+            <subsystem xmlns="urn:infinispan:server:jgroups:8.0">
                 <channels default="cluster">
                     <channel name="cluster"/>
                     <channel name="xsite" stack="tcp"/>
@@ -1217,7 +1167,6 @@
             <socket-binding name="rest" port="8080"/>
             <socket-binding name="txn-recovery-environment" port="4712"/>
             <socket-binding name="txn-status-manager" port="4713"/>
-            <socket-binding name="websocket" port="8181"/>
             <outbound-socket-binding name="remote-store-hotrod-server">
                 <remote-destination host="remote-host" port="11222"/>
             </outbound-socket-binding>
@@ -1239,7 +1188,6 @@
             <socket-binding name="rest" port="8080"/>
             <socket-binding name="txn-recovery-environment" port="4712"/>
             <socket-binding name="txn-status-manager" port="4713"/>
-            <socket-binding name="websocket" port="8181"/>
             <outbound-socket-binding name="remote-store-hotrod-server">
                 <remote-destination host="remote-host" port="11222"/>
             </outbound-socket-binding>
@@ -1265,7 +1213,6 @@
             <socket-binding name="rest" port="8080"/>
             <socket-binding name="txn-recovery-environment" port="4712"/>
             <socket-binding name="txn-status-manager" port="4713"/>
-            <socket-binding name="websocket" port="8181"/>
             <outbound-socket-binding name="remote-store-hotrod-server">
                 <remote-destination host="remote-host" port="11222"/>
             </outbound-socket-binding>
