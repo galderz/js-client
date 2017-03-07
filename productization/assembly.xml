@@ -5,6 +5,7 @@
   <formats>
     <format>zip</format>
   </formats>
+  <baseDirectory>jboss-datagrid-${jdgVersion}-nodejs-client</baseDirectory>
   <fileSets>
     <fileSet>
       <directory>${project.build.outputDirectory}</directory>
@@ -17,7 +18,7 @@
     </fileSet>
     <fileSet>
       <directory>${project.build.outputDirectory}/out</directory>
-      <outputDirectory>/doc/apidocs</outputDirectory>
+      <outputDirectory>doc/apidocs</outputDirectory>
       <includes>
         <include>**/**</include>
       </includes>

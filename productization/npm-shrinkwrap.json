@@ -3,11 +3,11 @@
   "version": "0.3.0-redhat-SNAPSHOT",
   "dependencies": {
     "log4js": {
-      "version": "0.6.31",
+      "version": "0.6.38",
       "from": "log4js@^0.6.29",
       "dependencies": {
         "readable-stream": {
-          "version": "1.0.33",
+          "version": "1.0.34",
           "from": "readable-stream@~1.0.2",
           "dependencies": {
             "core-util-is": {
@@ -23,7 +23,7 @@
               "from": "string_decoder@~0.10.x"
             },
             "inherits": {
-              "version": "2.0.1",
+              "version": "2.0.3",
               "from": "inherits@~2.0.1"
             }
           }
@@ -39,7 +39,7 @@
       "from": "promise@^7.0.4",
       "dependencies": {
         "asap": {
-          "version": "2.0.3",
+          "version": "2.0.5",
           "from": "asap@~2.0.3"
         }
       }

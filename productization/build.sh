@@ -154,4 +154,5 @@ main() {
 ##
 ##  Bootstrap
 ##
+warn "Usage of this script is DEPRECATED."
 main "$@"

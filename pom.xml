@@ -1,224 +1,305 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-   <parent>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-parent</artifactId>
-      <version>19.0.0.redhat-2</version>
-      <relativePath />
-   </parent>
-   
-   <groupId>org.infinispan</groupId>
-   <artifactId>infinispan-js-client</artifactId>
-   <version>0.3.0-redhat-SNAPSHOT</version>
-   <packaging>pom</packaging>
-   <name>Infinispan Javascript Client</name>
-   <description>Javascript Client for Infinispan</description>
-   <url>http://www.infinispan.org</url>
-   <organization>
-      <name>JBoss, a division of Red Hat</name>
-      <url>http://www.jboss.org</url>
-   </organization>
-   <licenses>
-      <license>
-         <name>Apache License</name>
-         <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-         <distribution>repo</distribution>
-      </license>
-   </licenses>
-   <developers>
-      <developer>
-         <id>placeholder</id>
-         <name>See http://www.infinispan.org for a complete list of contributors</name>
-      </developer>
-   </developers>
-   <properties>
-      <autoReleaseAfterClose>true</autoReleaseAfterClose>
-   </properties>
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>19.0.0.redhat-2</version>
+        <relativePath/>
+    </parent>
 
-   <build>
-      <plugins>
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>copy-resources</id>
-              <phase>generate-resources</phase>
-              <goals>
-                <goal>copy-resources</goal>
-              </goals>
-              <configuration>
-                <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                <resources>          
-                  <resource>
-                    <directory>${project.basedir}</directory>
-                    <excludes>
-                        <exclude>pom.xml</exclude>
-                        <exclude>build.sh</exclude>
-                        <exclude>maven-settings.xml</exclude>
-                        <exclude>npm-shrinkwrap.json</exclude><!-- copied by antrun below -->
-                        <exclude>target/**</exclude>
-                        <exclude>etc/**</exclude>
-                        <exclude>src/**</exclude>
-                    </excludes>
-                  </resource>
-                </resources>              
-              </configuration>            
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>shrinkwrap-json-clean</id>
-              <phase>process-resources</phase>
-              <configuration>
-                <target>
+    <groupId>org.infinispan</groupId>
+    <artifactId>infinispan-js-client</artifactId>
+    <version>0.3.0-redhat-SNAPSHOT</version>
+    <!-- Must correspond to 0.3.0-${versionSuffix} -->
+    <packaging>pom</packaging>
 
-                  <echo message="== Copying back npm-shrinkwrap.json into output dir omitting resolved lines..."></echo>
-                  <copy file="${project.basedir}/npm-shrinkwrap.json" tofile="${project.build.outputDirectory}/npm-shrinkwrap.json">
-                    <filterchain>
-                      <linecontainsregexp negate="true">
-                        <regexp pattern="&quot;resolved&quot;:\s*&quot;\S*&quot;\S*"></regexp>
-                      </linecontainsregexp>
-                    </filterchain>
-                  </copy>
+    <name>Infinispan Javascript Client</name>
+    <description>Javascript Client for Infinispan</description>
+    <url>http://www.infinispan.org</url>
+    <organization>
+        <name>JBoss, a division of Red Hat</name>
+        <url>http://www.jboss.org</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>Apache License</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>placeholder</id>
+            <name>See http://www.infinispan.org for a complete list of contributors</name>
+        </developer>
+    </developers>
 
-                  <echo message="== Cleaning from lines in npm-shrinkwrap.json file..."></echo>
-                  <replaceregexp
-                      byline="false"
-                      flags="mg"
-                      file="${project.build.outputDirectory}/npm-shrinkwrap.json"
-                      match="(&quot;from&quot;:\s*&quot;)(https://registry\.npmjs\.org/\S*/-/)" replace="\1">
-                  </replaceregexp>
-                  <!--
-                      The stripping of "resolved" lines may have left the json file broken (formatting).
-                      This section removes ',' followed by '}', which is not accepted by npm installation
-                  -->
-                  <replaceregexp
-                      byline="false"
-                      flags="mg"
-                      file="${project.build.outputDirectory}/npm-shrinkwrap.json"
-                      match="(,\s*)(${line.separator}\s*})" replace="\2">
-                  </replaceregexp>
-                </target>
-              </configuration>
-              <goals>
-                <goal>run</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-         
-        <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>0.0.24.redhat-001</version>
-            <configuration>
-                <workingDirectory>${project.build.outputDirectory}</workingDirectory>
-                <installDirectory>${project.build.directory}</installDirectory>
-            </configuration>
-            <executions>
-               <execution>
-                  <id>install node and npm</id>
-                  <goals>
-                     <goal>install-node-and-npm</goal>
-                  </goals>
-                  <phase>process-resources</phase>
-                  <configuration>
-                     <nodeVersion>v4.3.0</nodeVersion>
-                     <npmVersion>2.14.12</npmVersion>
-                  </configuration>
-               </execution>
-               <execution>
-                  <id>npm install</id>
-                  <goals>
-                     <goal>npm</goal>
-                  </goals>
-                  <phase>process-resources</phase>
-                  <configuration>
-                     <arguments>install</arguments>
-                  </configuration>
-               </execution>
-               <execution>
-                  <id>npm pack</id>
-                  <goals>
-                     <goal>npm</goal>
-                  </goals>
-                  <phase>prepare-package</phase>
-                  <configuration>
-                     <arguments>pack</arguments>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-         
-         <plugin>
-           <groupId>org.apache.maven.plugins</groupId>
-           <artifactId>maven-antrun-plugin</artifactId>
-           <executions>
-             <execution>
-               <id>fix-jsdoc</id>
-               <phase>prepare-package</phase>
-               <configuration>
-                 <target>
-                   <replace file="${project.build.outputDirectory}/node_modules/jsdoc/jsdoc.js"
-                       token="env node" value="env ${project.build.directory}/node/node"/>
-                   <chmod file="${project.build.outputDirectory}/node_modules/jsdoc/jsdoc.js"
-                       perm="ugo+x"/>
-                 </target>
-               </configuration>
-               <goals>
-                 <goal>run</goal>
-               </goals>
-             </execution>
-           </executions>
-         </plugin>
-         
-         <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-               <execution>
-                  <id>generate-jsdoc</id>
-                  <phase>prepare-package</phase>
-                  <goals>
-                     <goal>exec</goal>
-                  </goals>
-               </execution>
-            </executions>
-            <configuration>
-               <executable>bash</executable>
-               <arguments>
-                  <argument>-c</argument>
-                  <argument>./node_modules/jsdoc/jsdoc.js lib/*.js</argument>
-               </arguments>
-               <workingDirectory>${project.build.outputDirectory}</workingDirectory>
-            </configuration>
-         </plugin>
+    <properties>
+        <!-- prod properties -->
+        <jdgVersion>7.1.0</jdgVersion>
+        <buildSuffix>ERx</buildSuffix>
+        <rebuild>SNAPSHOT</rebuild>
+        <versionSuffix>${buildSuffix}-redhat-${rebuild}</versionSuffix>
 
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-                <descriptors>
-                  <descriptor>src/main/assembly/dist.xml</descriptor>
-                </descriptors>
-                <appendAssemblyId>false</appendAssemblyId>
-                <tarLongFileMode>posix</tarLongFileMode>
-            </configuration>
-            <executions>
-                <execution>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>single</goal>
-                  </goals>
-                </execution>
-            </executions>
-         </plugin>
-      </plugins>
-   </build>
+        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        <version.node>v4.3.0</version.node>
+        <version.npm>2.14.12</version.npm>
+    </properties>
+
+    <build>
+        <plugins>
+
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}</directory>
+                                    <excludes>
+                                        <exclude>pom.xml</exclude>
+                                        <exclude>target/**</exclude>
+                                        <exclude>etc/**</exclude>
+                                        <exclude>productization/**</exclude>
+                                        <!-- Ignore editor files: -->
+                                        <exclude>.idea/**</exclude>
+                                        <exclude>*.iml</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>0.0.24.redhat-001</version>
+                <configuration>
+                    <workingDirectory>${project.build.outputDirectory}</workingDirectory>
+                    <installDirectory>${project.build.directory}</installDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <nodeVersion>${version.node}</nodeVersion>
+                            <npmVersion>${version.npm}</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm shrinkwrap</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <arguments>shrinkwrap</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm pack</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <arguments>pack</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>version-update</id>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <target>
+
+                                <echo message="Updating versions."></echo>
+
+                                <fail message="Version suffix property is not defined!"
+                                      unless="versionSuffix"/>
+
+                                <replaceregexp
+                                        flags="mg"
+                                        file="${project.build.outputDirectory}/package.json"
+                                        match="(${line.separator})(\s*&quot;version&quot;:\s*&quot;[^-]*)(.*)(&quot;,${line.separator})"
+                                        replace="\1\2-${versionSuffix}\4">
+                                </replaceregexp>
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>shrinkwrap-json-clean</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <target>
+
+                                <copy file="${project.basedir}/productization/npm-shrinkwrap.json"
+                                      tofile="${project.build.outputDirectory}/npm-shrinkwrap.template.json"/>
+
+                                <echo message="Updating versions."></echo>
+
+                                <fail message="Version suffix property is not defined!"
+                                      unless="versionSuffix"/>
+
+                                <replaceregexp
+                                        flags="mg"
+                                        file="${project.build.outputDirectory}/package.json"
+                                        match="^(\{[^\{]*)(\s*&quot;version&quot;:\s*&quot;[^-]*)([^&quot;]*)(&quot;,${line.separator})"
+                                        replace="\1\2-${versionSuffix}\4">
+                                </replaceregexp>
+
+                                <replaceregexp
+                                        flags="mg"
+                                        file="${project.build.outputDirectory}/npm-shrinkwrap.template.json"
+                                        match="^(\{[^\{]*)(\s*&quot;version&quot;:\s*&quot;[^-]*)([^&quot;]*)(&quot;,${line.separator})"
+                                        replace="\1\2-${versionSuffix}\4">
+                                </replaceregexp>
+
+                                <echo message="Cleaning &quot;resolved&quot; lines in &quot;npm-shrinkwrap.json&quot; file."></echo>
+
+                                <replaceregexp
+                                        flags="mg"
+                                        file="${project.build.outputDirectory}/npm-shrinkwrap.json"
+                                        match="(${line.separator})(\s*&quot;resolved&quot;:\s*&quot;.*&quot;.*,?${line.separator})"
+                                        replace="\1">
+                                </replaceregexp>
+
+                                <echo message="Cleaning &quot;from&quot; lines in &quot;npm-shrinkwrap.json&quot; file."></echo>
+
+                                <replaceregexp
+                                        flags="mg"
+                                        file="${project.build.outputDirectory}/npm-shrinkwrap.json"
+                                        match="(${line.separator})(\s*&quot;from&quot;:\s*&quot;http.*&quot;.*,?${line.separator})"
+                                        replace="\1">
+                                </replaceregexp>
+
+                                <replaceregexp
+                                        flags="mg"
+                                        file="${project.build.outputDirectory}/npm-shrinkwrap.json"
+                                        match="(,\s*)(${line.separator}\s*})"
+                                        replace="\2">
+                                </replaceregexp>
+
+                                <condition property="checkOk">
+                                    <filesmatch file1="${project.build.outputDirectory}/npm-shrinkwrap.template.json"
+                                                file2="${project.build.outputDirectory}/npm-shrinkwrap.json"/>
+                                </condition>
+
+                                <fail message="File &quot;productization/npm-shrinkwrap.json&quot; needs to be updated!"
+                                      unless="checkOk"/>
+
+                                <delete file="${project.build.outputDirectory}/npm-shrinkwrap.template.json"/>
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>patch-jsdoc</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <replace file="${project.build.outputDirectory}/node_modules/jsdoc/jsdoc.js"
+                                         token="env node" value="env ${project.build.directory}/node/node"/>
+                                <chmod file="${project.build.outputDirectory}/node_modules/jsdoc/jsdoc.js"
+                                       perm="ugo+x"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-jsdoc</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>bash</executable>
+                    <arguments>
+                        <argument>-c</argument>
+                        <argument>./node_modules/jsdoc/jsdoc.js lib/*.js</argument>
+                    </arguments>
+                    <workingDirectory>${project.build.outputDirectory}</workingDirectory>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>productization/assembly.xml</descriptor>
+                    </descriptors>
+                    <finalName>jboss-datagrid-7.1.0.${buildSuffix}-nodejs-client</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <tarLongFileMode>posix</tarLongFileMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+        </plugins>
+    </build>
 </project>
