@@ -130,7 +130,7 @@
                 <worker name="default"/>
                 <buffer-pool name="default"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:core:8.3" default-cache-container="local">
+            <subsystem xmlns="urn:infinispan:server:core:8.4" default-cache-container="local">
                 <cache-container name="local" default-cache="default" statistics="true">
                     <global-state/>
                     <local-cache name="default" start="EAGER">
@@ -144,7 +144,7 @@
                     <local-cache name="namedCache" start="EAGER"/>
                 </cache-container>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:endpoint:8.0">
+            <subsystem xmlns="urn:infinispan:server:endpoint:8.1">
                 <hotrod-connector socket-binding="hotrod" cache-container="local">
                     <topology-state-transfer lazy-retrieval="false" lock-timeout="1000" replication-timeout="5000"/>
                 </hotrod-connector>
@@ -348,7 +348,7 @@
                 <worker name="default"/>
                 <buffer-pool name="default"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:core:8.3" default-cache-container="clustered">
+            <subsystem xmlns="urn:infinispan:server:core:8.4" default-cache-container="clustered">
                 <cache-container name="clustered" default-cache="default" statistics="true">
                     <transport lock-timeout="60000"/>
                     <global-state/>
@@ -387,7 +387,7 @@
                     </distributed-cache>
                 </cache-container>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:endpoint:8.0">
+            <subsystem xmlns="urn:infinispan:server:endpoint:8.1">
                 <hotrod-connector socket-binding="hotrod" cache-container="clustered">
                     <topology-state-transfer lazy-retrieval="false" lock-timeout="1000" replication-timeout="5000"/>
                 </hotrod-connector>
@@ -629,7 +629,7 @@
                 <worker name="default"/>
                 <buffer-pool name="default"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:core:8.3" default-cache-container="clustered">
+            <subsystem xmlns="urn:infinispan:server:core:8.4" default-cache-container="clustered">
                 <cache-container name="clustered" default-cache="default" statistics="true">
                     <transport lock-timeout="60000"/>
                     <global-state/>
@@ -675,12 +675,12 @@
                     </distributed-cache>
                 </cache-container>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:endpoint:8.0">
+            <subsystem xmlns="urn:infinispan:server:endpoint:8.1">
                 <hotrod-connector socket-binding="hotrod" cache-container="clustered">
                     <topology-state-transfer lazy-retrieval="false" lock-timeout="1000" replication-timeout="5000"/>
                 </hotrod-connector>
                 <memcached-connector socket-binding="memcached" cache-container="clustered"/>
-                <rest-connector socket-binding="rest" cache-container="clustered" security-domain="other" auth-method="BASIC"/>
+                <rest-connector socket-binding="rest" cache-container="clustered"/>
             </subsystem>
             <subsystem xmlns="urn:infinispan:server:jgroups:8.0">
                 <channels default="cluster">
@@ -917,7 +917,7 @@
                 <worker name="default"/>
                 <buffer-pool name="default"/>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:core:8.3" default-cache-container="clustered">
+            <subsystem xmlns="urn:infinispan:server:core:8.4" default-cache-container="clustered">
                 <cache-container name="clustered" default-cache="default" statistics="true">
                     <transport lock-timeout="60000"/>
                     <global-state/>
@@ -963,12 +963,12 @@
                     </distributed-cache>
                 </cache-container>
             </subsystem>
-            <subsystem xmlns="urn:infinispan:server:endpoint:8.0">
+            <subsystem xmlns="urn:infinispan:server:endpoint:8.1">
                 <hotrod-connector socket-binding="hotrod" cache-container="clustered">
                     <topology-state-transfer lazy-retrieval="false" lock-timeout="1000" replication-timeout="5000"/>
                 </hotrod-connector>
                 <memcached-connector socket-binding="memcached" cache-container="clustered"/>
-                <rest-connector socket-binding="rest" cache-container="clustered" security-domain="other" auth-method="BASIC"/>
+                <rest-connector socket-binding="rest" cache-container="clustered" />
             </subsystem>
             <subsystem xmlns="urn:infinispan:server:jgroups:8.0">
                 <channels default="cluster">
