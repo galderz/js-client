@@ -46,7 +46,7 @@
 
         <autoReleaseAfterClose>true</autoReleaseAfterClose>
         <version.node>v4.3.0</version.node>
-        <version.npm>2.14.12</version.npm>
+        <version.npm>3.10.10</version.npm>
     </properties>
 
     <build>
