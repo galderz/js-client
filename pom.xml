@@ -12,7 +12,7 @@
 
     <groupId>org.infinispan</groupId>
     <artifactId>infinispan-js-client</artifactId>
-    <version>0.3.0-redhat-SNAPSHOT</version>
+    <version>0.3.0.Final-redhat-1</version>
     <!-- Must correspond to 0.3.0-${versionSuffix} -->
     <packaging>pom</packaging>
 
@@ -40,8 +40,8 @@
     <properties>
         <!-- prod properties -->
         <jdgVersion>7.1.0</jdgVersion>
-        <buildSuffix>ERx</buildSuffix>
-        <rebuild>SNAPSHOT</rebuild>
+        <buildSuffix>Final</buildSuffix>
+        <rebuild>1</rebuild>
         <versionSuffix>${buildSuffix}-redhat-${rebuild}</versionSuffix>
 
         <autoReleaseAfterClose>true</autoReleaseAfterClose>
