@@ -12,8 +12,7 @@
 
     <groupId>org.infinispan</groupId>
     <artifactId>infinispan-js-client</artifactId>
-    <version>0.3.0-redhat-SNAPSHOT</version>
-    <!-- Must correspond to 0.3.0-${versionSuffix} -->
+    <version>7.2.0-redhat-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Infinispan Javascript Client</name>
@@ -39,10 +38,9 @@
 
     <properties>
         <!-- prod properties -->
-        <jdgVersion>7.1.0</jdgVersion>
-        <buildSuffix>ERx</buildSuffix>
+        <jdgVersion>7.2.0</jdgVersion>
         <rebuild>SNAPSHOT</rebuild>
-        <versionSuffix>${buildSuffix}-redhat-${rebuild}</versionSuffix>
+        <versionSuffix>-redhat-${rebuild}</versionSuffix>
 
         <autoReleaseAfterClose>true</autoReleaseAfterClose>
         <version.node>v4.3.0</version.node>
@@ -158,7 +156,7 @@
                                         flags="mg"
                                         file="${project.build.outputDirectory}/package.json"
                                         match="(${line.separator})(\s*&quot;version&quot;:\s*&quot;[^-]*)(.*)(&quot;,${line.separator})"
-                                        replace="\1\2-${versionSuffix}\4">
+                                        replace="\1\2${versionSuffix}\4">
                                 </replaceregexp>
 
                             </target>
@@ -185,14 +183,14 @@
                                         flags="mg"
                                         file="${project.build.outputDirectory}/package.json"
                                         match="^(\{[^\{]*)(\s*&quot;version&quot;:\s*&quot;[^-]*)([^&quot;]*)(&quot;,${line.separator})"
-                                        replace="\1\2-${versionSuffix}\4">
+                                        replace="\1\2${versionSuffix}\4">
                                 </replaceregexp>
 
                                 <replaceregexp
                                         flags="mg"
                                         file="${project.build.outputDirectory}/npm-shrinkwrap.template.json"
                                         match="^(\{[^\{]*)(\s*&quot;version&quot;:\s*&quot;[^-]*)([^&quot;]*)(&quot;,${line.separator})"
-                                        replace="\1\2-${versionSuffix}\4">
+                                        replace="\1\2${versionSuffix}\4">
                                 </replaceregexp>
 
                                 <echo message="Cleaning &quot;resolved&quot; lines in &quot;npm-shrinkwrap.json&quot; file."></echo>
@@ -285,7 +283,7 @@
                     <descriptors>
                         <descriptor>productization/assembly.xml</descriptor>
                     </descriptors>
-                    <finalName>jboss-datagrid-7.1.0.${buildSuffix}-nodejs-client</finalName>
+                    <finalName>jboss-datagrid-${jdgVersion}${versionSuffix}-nodejs-client</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
