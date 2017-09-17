@@ -39,8 +39,7 @@
     <properties>
         <!-- prod properties -->
         <jdgVersion>7.2.0</jdgVersion>
-        <rebuild>SNAPSHOT</rebuild>
-        <versionSuffix>-redhat-${rebuild}</versionSuffix>
+        <versionSuffix>-redhat-SNAPSHOT</versionSuffix>
 
         <autoReleaseAfterClose>true</autoReleaseAfterClose>
         <version.node>v4.3.0</version.node>
