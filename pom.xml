@@ -12,7 +12,7 @@
 
     <groupId>org.infinispan</groupId>
     <artifactId>infinispan-js-client</artifactId>
-    <version>7.2.0-redhat-SNAPSHOT</version>
+    <version>7.2.0.DR4-redhat-1</version>
     <packaging>pom</packaging>
 
     <name>Infinispan Javascript Client</name>
@@ -39,7 +39,7 @@
     <properties>
         <!-- prod properties -->
         <jdgVersion>7.2.0</jdgVersion>
-        <versionSuffix>-redhat-SNAPSHOT</versionSuffix>
+        <versionSuffix>-DR4-redhat-1</versionSuffix>
 
         <autoReleaseAfterClose>true</autoReleaseAfterClose>
         <version.node>v4.3.0</version.node>
