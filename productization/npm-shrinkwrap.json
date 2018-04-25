@@ -20,11 +20,11 @@
     },
     "log4js": {
       "version": "0.6.38",
-      "from": "log4js@>=0.6.29 <0.7.0"
+      "from": "log4js@>=0.6.38 <0.7.0"
     },
     "promise": {
       "version": "7.3.1",
-      "from": "promise@>=7.0.4 <8.0.0"
+      "from": "promise@>=7.3.1 <7.4.0"
     },
     "readable-stream": {
       "version": "1.0.34",
@@ -40,7 +40,7 @@
     },
     "underscore": {
       "version": "1.8.3",
-      "from": "underscore@>=1.8.3 <2.0.0"
+      "from": "underscore@>=1.8.3 <1.9.0"
     }
   }
 }
