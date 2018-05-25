@@ -1,6 +1,6 @@
 {
   "name": "infinispan",
-  "version": "7.2.0-redhat-SNAPSHOT",
+  "version": "7.2.1-redhat-SNAPSHOT",
   "dependencies": {
     "asap": {
       "version": "2.0.6",
